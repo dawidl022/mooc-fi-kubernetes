@@ -16,6 +16,6 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
       - name: Build the Docker image
-        run: docker build . -t dawidl022/simple-logger:$(date +%s)
+        run: docker build log-output -t dawidl022/simple-logger:$(date +%s)
       - name: Push to DockerHub
         run: docker push dawidl022/simple-logger
