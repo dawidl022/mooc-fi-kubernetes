@@ -17,7 +17,7 @@ func genRandomString(length int) string {
 }
 
 func main() {
-	randString := genRandomString(36)
+	randString := genRandomString(40)
 	for {
 		fmt.Printf("%s: %s\n", time.Now().Format(time.RFC3339), randString)
 		time.Sleep(time.Second * 5)
