@@ -7,8 +7,12 @@ COPY . .
 RUN go build -o todo-server
 
 
-FROM scratch
+FROM alpine:3.15.4
+
+RUN adduser -D appuser
 
 COPY --from=build-stage /usr/src/app .
+
+USER appuser
 
 CMD ["./todo-server"]

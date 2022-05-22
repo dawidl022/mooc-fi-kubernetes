@@ -1,4 +1,4 @@
-name: Push Logger image to DockerHub
+name: Push image to DockerHub
 
 on:
   workflow_call:
