@@ -5,6 +5,10 @@ on:
 
 jobs:
   push_logger_to_registry:
-    uses: ./.github/workflows/docker.yml@main
+    uses: ./.github/workflows/docker.yml
     with:
+      dockerfile_path: log-output
       image_name: dawidl022/simple-logger
+    secrets:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}

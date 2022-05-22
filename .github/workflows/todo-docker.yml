@@ -4,7 +4,11 @@ on:
       - todo/**
 
 jobs:
-  push_logger_to_registry:
-    uses: ./.github/workflows/docker.yml@main
+  push_todo_app_to_registry:
+    uses: ./.github/workflows/docker.yml
     with:
+      dockerfile_path: todo
       image_name: dawidl022/todo-app
+    secrets:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}

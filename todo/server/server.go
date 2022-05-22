@@ -14,6 +14,7 @@ func StartServer() {
 	}
 	done := make(chan bool)
 	go serve(port)
+
 	// wait for any immediate errors
 	time.Sleep(time.Second)
 	log.Printf("Server started in port %s\n", port)
