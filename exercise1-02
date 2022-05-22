@@ -1,0 +1,10 @@
+$ kubectl create deployment todo-app --image=dawidl022/todo-app:sha-4e3b5a5
+deployment.apps/todo-app created
+
+$ kubectl get pods                                                         
+NAME                                 READY   STATUS    RESTARTS   AGE
+logger-67ff5dff4f-xlqr5              1/1     Running   0          132m
+todo-app-59f76bc8f4-88xc7            1/1     Running   0          5s
+
+$ kubectl logs -f todo-app-59f76bc8f4-88xc7                                
+2022/05/22 18:15:19 Server started in port 8080
