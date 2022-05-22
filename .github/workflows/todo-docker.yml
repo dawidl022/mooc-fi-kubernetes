@@ -1,10 +1,10 @@
 on:
   push:
     paths:
-      - log-output/**
+      - todo/**
 
 jobs:
   push_logger_to_registry:
     uses: ./.github/workflows/docker.yml@main
     with:
-      image_name: dawidl022/simple-logger
+      image_name: dawidl022/todo-app
