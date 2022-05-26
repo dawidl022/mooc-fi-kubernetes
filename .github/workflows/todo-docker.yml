@@ -2,7 +2,7 @@ on:
   push:
     paths:
       - todo/**
-      - "!todo/manifests"
+      - "!todo/manifests/**"
 
 jobs:
   push_todo_app_to_registry:
