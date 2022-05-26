@@ -2,6 +2,7 @@ on:
   push:
     paths:
       - log-output/**
+      - "!log-output/manifests"
 
 jobs:
   push_logger_to_registry:
