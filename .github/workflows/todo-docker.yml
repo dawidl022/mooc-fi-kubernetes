@@ -1,3 +1,5 @@
+name: Push todo-app image to DockerHub
+
 on:
   push:
     paths:

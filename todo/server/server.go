@@ -21,5 +21,5 @@ func StartServer() {
 }
 
 func serve(port string) {
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, newHashHandler()))
 }
