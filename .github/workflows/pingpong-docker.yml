@@ -1,0 +1,17 @@
+name: Push ping-pong image to DockerHub
+
+on:
+  push:
+    paths:
+      - ping-pong/**
+      - "!ping-pong/manifests/**"
+
+jobs:
+  push_ping_pong_to_registry:
+    uses: ./.github/workflows/docker.yml
+    with:
+      dockerfile_path: ping-pong
+      image_name: dawidl022/ping-pong
+    secrets:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
