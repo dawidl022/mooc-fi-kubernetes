@@ -13,4 +13,4 @@ spec:
     spec:
       containers:
       - name: log-output
-        image: dawidl022/simple-logger:sha-875d747
+        image: dawidl022/simple-logger:sha-2096f87
