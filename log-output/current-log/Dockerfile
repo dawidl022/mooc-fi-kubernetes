@@ -17,4 +17,4 @@ COPY --from=build-stage /usr/src/app .
 
 USER appuser
 
-RUN ["./current-log"]
+CMD ["./current-log"]
