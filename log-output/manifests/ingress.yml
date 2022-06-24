@@ -4,19 +4,26 @@ metadata:
   name: log-output-ingress
 spec:
   rules:
-  - http:
-      paths:
-      - pathType: Prefix
-        path: /
-        backend:
-          service:
-            name: log-output-svc
-            port: 
-              number: 8080
-      - pathType: Prefix
-        path: /pingpong
-        backend:
-          service:
-            name: ping-pong-svc
-            port:
-              number: 8080
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: log-output-svc
+                port:
+                  number: 8080
+          - pathType: Prefix
+            path: /pingpong
+            backend:
+              service:
+                name: ping-pong-svc
+                port:
+                  number: 8080
+          - pathType: Prefix
+            path: /current
+            backend:
+              service:
+                name: current-log-svc
+                port:
+                  number: 8081

@@ -11,6 +11,20 @@ spec:
       labels:
         app: log-output
     spec:
+      volumes:
+        - name: shared-logs
+          emptyDir: {}
       containers:
-      - name: log-output
-        image: dawidl022/simple-logger:sha-2096f87
+        - name: log-output
+          image: dawidl022/simple-logger:sha-3643b59
+          volumeMounts:
+            - mountPath: /usr/src/app/logs
+              name: shared-logs
+        - name: current-log
+          image: dawidl022/current-log:sha-3643b59
+          volumeMounts:
+            - mountPath: /usr/src/app/logs
+              name: shared-logs
+          env:
+            - name: PORT
+              value: "8081"
