@@ -1,4 +1,4 @@
-module github.com/dawidl022/mooc-fi-kubernetes/log-output
+module github.com/dawidl022/mooc-fi-kubernetes/log-output/logger
 
 go 1.18
 
