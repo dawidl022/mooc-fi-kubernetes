@@ -11,6 +11,12 @@ spec:
       labels:
         app: todo-app
     spec:
+      volumes:
+        - name: cache-volume
+          emptyDir: {}
       containers:
         - name: todo-app
-          image: dawidl022/todo-app:sha-0d1e12b
+          image: dawidl022/todo-app:sha-d6fe923
+          volumeMounts:
+            - mountPath: /cache
+              name: cache-volume
