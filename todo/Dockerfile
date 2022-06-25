@@ -11,7 +11,7 @@ FROM alpine:3.15.4
 
 RUN adduser -D appuser
 
-COPY --from=build-stage /usr/src/app .
+COPY --from=build-stage /usr/src/app/todo-server ./todo-server
 
 USER appuser
 
