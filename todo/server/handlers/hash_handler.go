@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type hashHander struct {
 	initialHash string
 }
 
-func newHashHandler() *hashHander {
+func NewHashHandler() *hashHander {
 	return &hashHander{
 		initialHash: hashgen.GenRandomHash(HASH_LEN),
 	}
