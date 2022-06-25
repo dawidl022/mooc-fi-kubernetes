@@ -14,17 +14,22 @@ spec:
       volumes:
         - name: shared-logs
           emptyDir: {}
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: image-claim
       containers:
         - name: log-output
-          image: dawidl022/simple-logger:sha-3643b59
+          image: dawidl022/simple-logger:sha-45a887c
           volumeMounts:
             - mountPath: /usr/src/app/logs
               name: shared-logs
         - name: current-log
-          image: dawidl022/current-log:sha-3643b59
+          image: dawidl022/current-log:sha-45a887c
           volumeMounts:
             - mountPath: /usr/src/app/logs
               name: shared-logs
+            - mountPath: /usr/src/app/stats
+              name: shared-volume
           env:
             - name: PORT
-              value: "8081"
+              value: '8081'

@@ -20,10 +20,3 @@ spec:
                 name: ping-pong-svc
                 port:
                   number: 8080
-          - pathType: Prefix
-            path: /current
-            backend:
-              service:
-                name: current-log-svc
-                port:
-                  number: 8081
