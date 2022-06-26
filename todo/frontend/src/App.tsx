@@ -1,16 +1,26 @@
 import { FC } from 'react';
+import axios from 'axios';
 
 const App: FC = () => {
+  const TODO_ID = 'todo';
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const submitTodo = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    axios.post(`${backendUrl}/todos`, data.get(TODO_ID)).then(() => {
+      console.log('Todo uploaded successfully');
+      form.reset();
+    });
+  };
+
   return (
     <main className="app">
-      <img
-        src="http://localhost:8081/daily-image"
-        alt=""
-        className="daily-image"
-      />
+      <img src={`${backendUrl}/daily-image`} alt="" className="daily-image" />
 
-      <form onSubmit={e => e.preventDefault()}>
-        <input type="text" id="todo" maxLength={140} />
+      <form onSubmit={submitTodo}>
+        <input type="text" name={TODO_ID} id={TODO_ID} maxLength={140} />
         <button type="submit">Create TODO</button>
       </form>
 
