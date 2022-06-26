@@ -7,9 +7,16 @@ spec:
   - http:
       paths:
       - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: todo-ui-svc
+            port:
+              number: 3000
+      - pathType: Prefix
         path: /api
         backend:
           service:
-            name: todo-app-svc
+            name: todo-api-svc
             port: 
               number: 8080

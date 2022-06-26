@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todo-app
+  name: todo-api
 spec:
   selector:
     matchLabels:
-      app: todo-app
+      app: todo-api
   template:
     metadata:
       labels:
-        app: todo-app
+        app: todo-api
     spec:
       volumes:
         - name: cache-volume
           emptyDir: {}
       containers:
-        - name: todo-app
-          image: dawidl022/todo-app:sha-d6fe923
+        - name: todo-api
+          image: dawidl022/todo-app:sha-6b0f308
           volumeMounts:
             - mountPath: /cache
               name: cache-volume

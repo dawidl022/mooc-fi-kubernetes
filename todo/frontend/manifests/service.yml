@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-ui-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: todo-ui
+  ports:
+    - port: 3000
+      targetPort: 80
+      protocol: TCP
