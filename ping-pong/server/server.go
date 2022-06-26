@@ -22,6 +22,10 @@ func StartServer() {
 		writeRequestCount(counter)
 	})
 
+	http.HandleFunc("/ping-count", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, strconv.Itoa(counter))
+	})
+
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 

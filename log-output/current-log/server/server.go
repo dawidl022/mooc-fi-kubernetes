@@ -19,10 +19,15 @@ func StartServer() {
 			http.Error(w, fmt.Sprintf("failed to read log file: %v", err), http.StatusInternalServerError)
 			return
 		}
-		ping_count, err := os.ReadFile("stats/ping_count")
+		resp, err := http.Get("http://ping-pong-svc/ping-count")
 		if err != nil {
-			http.Error(w, fmt.Sprintf("failed to read ping count file: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("failed to get ping count: %v", err), http.StatusInternalServerError)
 			return
+		}
+		var ping_count []byte
+		_, err = resp.Body.Read(ping_count)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to parse ping-count body %v", err), http.StatusInternalServerError)
 		}
 
 		w.Write(current_log)
