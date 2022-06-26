@@ -8,6 +8,8 @@ RUN yarn install
 
 COPY . .
 
+ENV VITE_BACKEND_URL="http://todo-api-svc"
+
 RUN yarn build
 
 

@@ -1,4 +1,4 @@
-name: Push todo-api ui to DockerHub
+name: Push todo-api ui image to DockerHub
 
 on:
   push:
