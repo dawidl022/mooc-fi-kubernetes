@@ -3,14 +3,14 @@ name: Push todo-app image to DockerHub
 on:
   push:
     paths:
-      - todo/**
-      - "!todo/manifests/**"
+      - todo/backend/**
+      - '!todo/manifests/**'
 
 jobs:
   push_todo_app_to_registry:
     uses: ./.github/workflows/docker.yml
     with:
-      dockerfile_path: todo
+      dockerfile_path: todo/backend
       image_name: dawidl022/todo-app
     secrets:
       username: ${{ secrets.DOCKER_USERNAME }}
