@@ -1,13 +1,13 @@
-name: Push todo-app image to DockerHub
+name: Push todo-app api image to DockerHub
 
 on:
   push:
     paths:
       - todo/backend/**
-      - '!todo/manifests/**'
+      - "!todo/backend/manifests/**"
 
 jobs:
-  push_todo_app_to_registry:
+  push_todo_api_to_registry:
     uses: ./.github/workflows/docker.yml
     with:
       dockerfile_path: todo/backend

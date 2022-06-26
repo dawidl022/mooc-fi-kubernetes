@@ -1,0 +1,17 @@
+name: Push todo-api ui to DockerHub
+
+on:
+  push:
+    paths:
+      - todo/frontend/**
+      - "!todo/frontend/manifests/**"
+
+jobs:
+  push_todo_ui_to_registry:
+    uses: ./.github/workflows/docker.yml
+    with:
+      dockerfile_path: todo/frontend
+      image_name: dawidl022/todo-ui
+    secrets:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
