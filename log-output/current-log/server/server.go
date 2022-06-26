@@ -30,6 +30,7 @@ func StartServer() {
 			http.Error(w, fmt.Sprintf("failed to parse ping-count body %v", err), http.StatusInternalServerError)
 		}
 
+		fmt.Fprintln(w, os.Getenv("MESSAGE"))
 		w.Write(current_log)
 		fmt.Fprintf(w, "Ping / Pongs: %s", ping_count)
 	})
