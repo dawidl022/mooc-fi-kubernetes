@@ -19,12 +19,12 @@ spec:
             claimName: image-claim
       containers:
         - name: log-output
-          image: dawidl022/simple-logger:sha-45a887c
+          image: dawidl022/simple-logger:sha-0f12255
           volumeMounts:
             - mountPath: /usr/src/app/logs
               name: shared-logs
         - name: current-log
-          image: dawidl022/current-log:sha-45a887c
+          image: dawidl022/current-log:sha-0f12255
           volumeMounts:
             - mountPath: /usr/src/app/logs
               name: shared-logs

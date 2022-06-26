@@ -17,7 +17,7 @@ spec:
             claimName: image-claim
       containers:
         - name: ping-pong
-          image: dawidl022/ping-pong:sha-45a887c
+          image: dawidl022/ping-pong:sha-53eb113
           volumeMounts:
             - mountPath: /stats
               name: shared-volume
