@@ -20,12 +20,12 @@ spec:
             claimName: image-claim
       containers:
         - name: log-output
-          image: dawidl022/simple-logger:sha-0f12255
+          image: dawidl022/simple-logger:sha-5de7683
           volumeMounts:
             - mountPath: /usr/src/app/logs
               name: shared-logs
         - name: current-log
-          image: dawidl022/current-log:sha-0f12255
+          image: dawidl022/current-log:sha-5de7683
           volumeMounts:
             - mountPath: /usr/src/app/logs
               name: shared-logs
@@ -34,3 +34,6 @@ spec:
           env:
             - name: PORT
               value: '8081'
+          envFrom:
+            - configMapRef:
+                name: log-dotenv

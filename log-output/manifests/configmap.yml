@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-dotenv
+  namespace: exercises
+data:
+  MESSAGE: Hello
