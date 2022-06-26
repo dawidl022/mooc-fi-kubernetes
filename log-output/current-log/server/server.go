@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -24,8 +25,7 @@ func StartServer() {
 			http.Error(w, fmt.Sprintf("failed to get ping count: %v", err), http.StatusInternalServerError)
 			return
 		}
-		var ping_count []byte
-		_, err = resp.Body.Read(ping_count)
+		ping_count, err := io.ReadAll(resp.Body)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to parse ping-count body %v", err), http.StatusInternalServerError)
 		}
