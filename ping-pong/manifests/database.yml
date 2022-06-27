@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-pong-svc
+  namespace: exercises
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-pong
+  namespace: exercises
+spec:
+  selector:
+    matchLabels:
+      app: postgres-pong
+  serviceName: postgres-pong-svc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres-pong
+    spec:
+      containers:
+        - name: postgres-pong
+          image: postgres:14.4
+          ports:
+            - containerPort: 5432
+              name: web
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          envFrom:
+            - secretRef:
+                name: postgres-env
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ['ReadWriteOnce']
+        resources:
+          requests:
+            storage: 100Mi
