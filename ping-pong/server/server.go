@@ -18,7 +18,7 @@ func StartServer() {
 		log.Println("failed to initialise database")
 	}
 
-	counter := 0
+	counter := getInitialCount(db)
 	writeRequestCount(counter)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +35,7 @@ func StartServer() {
 	log.Fatal(http.ListenAndServe(":"+conf.Port, nil))
 }
 
-func writeRequestCount(count int) {
+func writeRequestCount(count int64) {
 	err := os.WriteFile("stats/ping_count", []byte(strconv.Itoa(count)), 0644)
 	if err != nil {
 		log.Println(err)

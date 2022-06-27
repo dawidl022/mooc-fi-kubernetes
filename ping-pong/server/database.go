@@ -42,6 +42,16 @@ func connectDB(conf *config.Conf) (*gorm.DB, error) {
 	})
 }
 
+func getInitialCount(db *gorm.DB) int {
+	var counter models.Counter
+	err := db.Find(&counter).Error
+
+	if err != nil {
+		return 0
+	}
+	return counter.PingCount
+}
+
 func persistsRequestCountToDB(db *gorm.DB, counter int) {
 	if db == nil {
 		return
