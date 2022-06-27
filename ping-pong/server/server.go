@@ -6,13 +6,18 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/dawidl022/mooc-fi-kubernetes/ping-pong/config"
 )
 
 func StartServer() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	conf := config.GetConf()
+
+	db, err := initDB(&conf)
+	if err != nil {
+		log.Println("failed to initialise database")
 	}
+
 	counter := 0
 	writeRequestCount(counter)
 
@@ -20,13 +25,14 @@ func StartServer() {
 		fmt.Fprintf(w, "pong %d", counter)
 		counter++
 		writeRequestCount(counter)
+		persistsRequestCountToDB(db, counter)
 	})
 
 	http.HandleFunc("/ping-count", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, strconv.Itoa(counter))
 	})
 
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+conf.Port, nil))
 }
 
 func writeRequestCount(count int) {
