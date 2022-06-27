@@ -42,7 +42,11 @@ func connectDB(conf *config.Conf) (*gorm.DB, error) {
 	})
 }
 
-func getCountFromDB(db *gorm.DB) int {
+func (s *server) getRequestCount(db *gorm.DB) int {
+	if db == nil {
+		return s.inMemoryCounter
+	}
+
 	var counter models.Counter
 	err := db.Find(&counter).Error
 
@@ -52,8 +56,9 @@ func getCountFromDB(db *gorm.DB) int {
 	return counter.PingCount
 }
 
-func incrementRequestCountInDB(db *gorm.DB) {
+func (s *server) incrementRequestCount(db *gorm.DB) {
 	if db == nil {
+		s.inMemoryCounter++
 		return
 	}
 	db.Transaction(func(tx *gorm.DB) error {

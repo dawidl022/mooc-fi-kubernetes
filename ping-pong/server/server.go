@@ -8,7 +8,13 @@ import (
 	"strconv"
 
 	"github.com/dawidl022/mooc-fi-kubernetes/ping-pong/config"
+	"gorm.io/gorm"
 )
+
+type server struct {
+	inMemoryCounter int
+	db              *gorm.DB
+}
 
 func StartServer() {
 	conf := config.GetConf()
@@ -17,16 +23,17 @@ func StartServer() {
 	if err != nil {
 		log.Println("failed to initialise database")
 	}
+	s := server{db: db}
 
-	counter := getCountFromDB(db)
+	counter := s.getRequestCount(db)
 	writeRequestCount(counter)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		counter = getCountFromDB(db)
+		counter = s.getRequestCount(db)
 		fmt.Fprintf(w, "pong %d", counter)
 
 		writeRequestCount(counter)
-		incrementRequestCountInDB(db)
+		s.incrementRequestCount(db)
 	})
 
 	http.HandleFunc("/ping-count", func(w http.ResponseWriter, r *http.Request) {
