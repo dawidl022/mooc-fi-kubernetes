@@ -42,6 +42,14 @@ func connectDB(conf *config.Conf) (*gorm.DB, error) {
 	})
 }
 
+func initDBIfNull(db *gorm.DB, conf config.Conf) *gorm.DB {
+	if db == nil {
+		newDb, _ := initDB(&conf)
+		return newDb
+	}
+	return db
+}
+
 func (s *server) getRequestCount(db *gorm.DB) int {
 	if db == nil {
 		return s.inMemoryCounter

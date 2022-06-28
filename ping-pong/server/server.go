@@ -25,11 +25,13 @@ func StartServer() {
 	}
 	s := server{db: db}
 
-	counter := s.getRequestCount(db)
-	writeRequestCount(counter)
+	writeRequestCount(s.getRequestCount(db))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		counter = s.getRequestCount(db)
+		// try to reconnect to db on each request if db wasn't initialised successfully before
+		db = initDBIfNull(db, conf)
+
+		counter := s.getRequestCount(db)
 		fmt.Fprintf(w, "pong %d", counter)
 
 		writeRequestCount(counter)
@@ -37,7 +39,8 @@ func StartServer() {
 	})
 
 	http.HandleFunc("/ping-count", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, strconv.Itoa(counter))
+		db = initDBIfNull(db, conf)
+		fmt.Fprint(w, strconv.Itoa(s.getRequestCount(db)))
 	})
 
 	log.Fatal(http.ListenAndServe(":"+conf.Port, nil))
