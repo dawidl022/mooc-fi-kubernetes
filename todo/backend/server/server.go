@@ -3,24 +3,27 @@ package server
 import (
 	"log"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/dawidl022/mooc-fi-kubernetes/todo/config"
 )
 
 func StartServer() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	conf := config.GetConf()
 	done := make(chan bool)
-	go serve(port)
+	go serve(conf)
 	// wait for any immediate errors
 	time.Sleep(time.Second)
-	log.Printf("Server started in port %s\n", port)
+	log.Printf("Server started in port %s\n", conf.Port)
 	<-done
 }
 
-func serve(port string) {
-	routes()
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+func serve(conf config.Conf) {
+	db, err := initDB(&conf)
+	if err != nil {
+		log.Fatalf("failed to initialise database: %v", err)
+	}
+
+	routes(db)
+	log.Fatal(http.ListenAndServe(":"+conf.Port, nil))
 }

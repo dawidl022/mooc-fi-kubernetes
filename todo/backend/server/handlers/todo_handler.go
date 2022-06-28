@@ -4,15 +4,18 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"github.com/dawidl022/mooc-fi-kubernetes/todo/models"
+	"gorm.io/gorm"
 )
 
 type todoHandler struct {
-	todos []string
+	db *gorm.DB
 }
 
-func NewTodoHandler() *todoHandler {
+func NewTodoHandler(db *gorm.DB) *todoHandler {
 	return &todoHandler{
-		todos: []string{},
+		db: db,
 	}
 }
 
@@ -21,20 +24,33 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		todos, err := json.Marshal(t.todos)
+		var todos []*models.Todo
+		err := t.db.Find(&todos).Error
 		if err != nil {
-			http.Error(w, "Failed to fetch todos", http.StatusInternalServerError)
+			http.Error(w, "failed to fetch todos", http.StatusInternalServerError)
+			return
+		}
+
+		todosJson, err := json.Marshal(todos)
+		if err != nil {
+			http.Error(w, "failed to marshal todos", http.StatusInternalServerError)
 			return
 		}
 		w.Header().Add("Content-Type", "application/json")
-		w.Write(todos)
+		w.Write(todosJson)
 	case http.MethodPost:
 		todo, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Failed to get todo from request", http.StatusInternalServerError)
+			return
+		}
+		todoModel := models.Todo{Content: string(todo)}
+		err = t.db.Create(&todoModel).Error
 		if err != nil {
 			http.Error(w, "Failed to save todo", http.StatusInternalServerError)
 			return
 		}
-		t.todos = append(t.todos, string(todo))
+
 		w.WriteHeader(http.StatusCreated)
 	default:
 		http.Error(w, "", http.StatusMethodNotAllowed)
