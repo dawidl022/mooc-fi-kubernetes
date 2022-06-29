@@ -17,7 +17,25 @@ spec:
           emptyDir: {}
       containers:
         - name: todo-api
-          image: dawidl022/todo-app:sha-6b0f308
+          image: dawidl022/todo-app:sha-583aa02
           volumeMounts:
             - mountPath: /cache
               name: cache-volume
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_PASSWORD
+            - name: DB_URL
+              value: 'postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable'
