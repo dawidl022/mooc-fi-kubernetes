@@ -64,7 +64,7 @@ func AddWikiPage(db *gorm.DB) func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		url := resp.Header.Get("Location")
+		url := resp.Header.Get("location")
 		todo := models.Todo{Content: url}
 
 		err = db.Create(&todo).Error
