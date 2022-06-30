@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: wikipedia
+  namespace: project
+spec:
+  schedule: '0 5 * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: curl
+              image: buildpack-deps:curl
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -ec
+                - curl --fail http://todo-api-svc:8080/add-wiki-page
+          restartPolicy: OnFailure
