@@ -58,13 +58,19 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddWikiPage(db *gorm.DB) func(w http.ResponseWriter, r *http.Request) {
+	client := http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
-		resp, err := http.Get("https://en.wikipedia.org/wiki/Special:Random")
+		resp, err := client.Get("https://en.wikipedia.org/wiki/Special:Random")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		url := resp.Header.Get("location")
+		url := resp.Header.Get("Location")
 		todo := models.Todo{Content: url}
 
 		err = db.Create(&todo).Error
