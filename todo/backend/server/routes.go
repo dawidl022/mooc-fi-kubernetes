@@ -13,6 +13,7 @@ func routes(db *gorm.DB) {
 	http.Handle("/api/daily-image", handlers.NewDailyImageHandler())
 	http.Handle("/api/todos", handlers.NewTodoHandler(db))
 
+	http.HandleFunc("/add-wiki-page", handlers.AddWikiPage(db))
 	http.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
 		os.Exit(0)
 	})

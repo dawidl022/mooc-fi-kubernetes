@@ -56,3 +56,22 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusMethodNotAllowed)
 	}
 }
+
+func AddWikiPage(db *gorm.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		resp, err := http.Get("https://en.wikipedia.org/wiki/Special:Random")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		url := resp.Header.Get("Location")
+		todo := models.Todo{Content: url}
+
+		err = db.Create(&todo).Error
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusCreated)
+	}
+}
