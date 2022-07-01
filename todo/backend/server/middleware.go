@@ -3,6 +3,7 @@
 package server
 
 import (
+	"bytes"
 	"io"
 	"log"
 	"net/http"
@@ -32,13 +33,32 @@ func (rw *responseWriter) WriteHeader(code int) {
 	rw.wroteHeader = true
 }
 
+type readCloser struct {
+	io.Reader
+	io.Closer
+}
+
+func NewTeeCloser(rc io.ReadCloser, w io.Writer) io.ReadCloser {
+	tee := io.TeeReader(rc, w)
+	return readCloser{tee, rc}
+}
+
 func LoggingMiddleware(logger log.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			wrapped := wrapResponseWriter(w)
+
+			var bodyBuf bytes.Buffer
+			tee := NewTeeCloser(r.Body, &bodyBuf)
+			r.Body = tee
+
 			next.ServeHTTP(wrapped, r)
-			body, _ := io.ReadAll(r.Body)
-			logger.Printf("%d %s %s %s", wrapped.status, r.Method, r.URL.EscapedPath(), body)
+			if wrapped.status == 0 {
+				wrapped.status = 200
+			}
+
+			body, _ := io.ReadAll(&bodyBuf)
+			logger.Printf("%d %s %s %s", wrapped.status, r.Method, r.URL.EscapedPath(), string(body))
 		})
 	}
 }
