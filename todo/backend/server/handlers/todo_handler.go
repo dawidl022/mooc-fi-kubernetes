@@ -44,6 +44,10 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to get todo from request", http.StatusInternalServerError)
 			return
 		}
+		if len(todo) > 140 {
+			http.Error(w, "Todo cannot be longer than 140 characters", http.StatusBadRequest)
+			return
+		}
 		todoModel := models.Todo{Content: string(todo)}
 		err = t.db.Create(&todoModel).Error
 		if err != nil {

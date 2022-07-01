@@ -24,6 +24,9 @@ func serve(conf config.Conf) {
 		log.Fatalf("failed to initialise database: %v", err)
 	}
 
-	routes(db)
-	log.Fatal(http.ListenAndServe(":"+conf.Port, nil))
+	router := http.NewServeMux()
+	routes(router, db)
+	configuredRouter := LoggingMiddleware(*log.Default())(router)
+
+	log.Fatal(http.ListenAndServe(":"+conf.Port, configuredRouter))
 }
