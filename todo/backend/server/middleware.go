@@ -58,7 +58,7 @@ func LoggingMiddleware(logger log.Logger) func(http.Handler) http.Handler {
 			}
 
 			body, _ := io.ReadAll(&bodyBuf)
-			logger.Printf("%d %s %s %s", wrapped.status, r.Method, r.URL.EscapedPath(), string(body))
+			logger.Printf("%d %s %s {Body: \"%s\"}", wrapped.status, r.Method, r.URL.EscapedPath(), string(body))
 		})
 	}
 }
