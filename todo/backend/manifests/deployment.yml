@@ -17,7 +17,7 @@ spec:
           emptyDir: {}
       containers:
         - name: todo-api
-          image: dawidl022/todo-app:sha-49bb53e
+          image: dawidl022/todo-app:sha-0a0242f
           volumeMounts:
             - mountPath: /cache
               name: cache-volume
