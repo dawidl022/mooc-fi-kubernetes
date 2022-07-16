@@ -4,10 +4,10 @@ metadata:
   name: log-output-svc
   namespace: exercises
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: log-output
   ports:
-    - port: 8080
+    - port: 80
       targetPort: 8081
       protocol: TCP

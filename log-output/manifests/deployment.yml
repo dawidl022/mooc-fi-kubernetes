@@ -12,28 +12,12 @@ spec:
       labels:
         app: log-output
     spec:
-      volumes:
-        - name: shared-logs
-          emptyDir: {}
-        - name: shared-volume
-          persistentVolumeClaim:
-            claimName: image-claim
       containers:
         - name: log-output
           image: dawidl022/simple-logger:sha-5de7683
-          volumeMounts:
-            - mountPath: /usr/src/app/logs
-              name: shared-logs
-        - name: current-log
-          image: dawidl022/current-log:sha-5de7683
-          volumeMounts:
-            - mountPath: /usr/src/app/logs
-              name: shared-logs
-            - mountPath: /usr/src/app/stats
-              name: shared-volume
           env:
             - name: PORT
-              value: '8081'
+              value: "8081"
           envFrom:
             - configMapRef:
                 name: log-dotenv
