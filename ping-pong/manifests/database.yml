@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: postgres-pong
-  serviceName: postgres-pong-svc
+  serviceName: postgres-pong-lb-svc
   replicas: 1
   template:
     metadata:
@@ -43,8 +43,7 @@ spec:
     - metadata:
         name: data
       spec:
-        accessModes: ['ReadWriteOnce']
-        storageClassName: local-path
+        accessModes: ["ReadWriteOnce"]
         resources:
           requests:
             storage: 100Mi
