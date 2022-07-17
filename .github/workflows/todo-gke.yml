@@ -1,0 +1,66 @@
+name: Release todo app to Google Kubernetes Engine
+
+on:
+  push:
+    paths:
+      - todo/**
+
+# TODO split into 3 workflows: backend build, frontend build, and manifest config change
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: dwk-cluster
+  GKE_ZONE: europe-west4-a
+  IMAGE_API: todo-api
+  IMAGE_UI: todo-ui
+
+jobs:
+  build-publish-deploy:
+    name: Build, publish and deploy to GKE cluster
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GKE_PROJECT }}
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Configure Google Container Registry
+        run: gcloud --quiet auth configure-docker
+
+      - name: Fetch credentials for Kubernetes cluster
+        run: glcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+      - name: Build API
+        run: |-
+          docker build \
+            --tag "gcr.io/$PROJECT_ID/$IMAGE_API:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
+            todo/backend
+
+      - name: Publish API
+        run: |-
+          docker push "gcr.io/$PROJECT_ID/$IMAGE_API:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+
+      - name: Build UI
+        run: |-
+          docker build \
+            --tag "gcr.io/$PROJECT_ID/$IMAGE_UI:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" \
+            todo/frontend
+
+      - name: Publish UI
+        run: docker push "gcr.io/$PROJECT_ID/$IMAGE_UI:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v1
+
+      - name: Deploy
+        run: |-
+          kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment $IMAGE_API
+          kubectl rollout status deployment $IMAGE_UI
+          kubectl get services -o wide
