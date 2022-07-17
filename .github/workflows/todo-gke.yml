@@ -60,7 +60,7 @@ jobs:
 
       - name: Deploy
         run: |-
-          kustomize build . | kubectl apply -f -
+          kustomize build todo/manifests | kubectl apply -f -
           kubectl rollout status deployment $IMAGE_API
           kubectl rollout status deployment $IMAGE_UI
           kubectl get services -o wide
