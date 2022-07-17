@@ -2,8 +2,8 @@ name: Release todo app to Google Kubernetes Engine
 
 on:
   push:
-    paths:
-      - todo/**
+    # paths:
+    # - todo/**
 
 # TODO split into 3 workflows: backend build, frontend build, and manifest config change
 
@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GKE_PROJECT }}
           service_account_key: ${{ secrets.GKE_SA_KEY }}
