@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - todo/**
+      - .github/workflows/todo-gke.yml
 
 # TODO split into 3 workflows: backend build, frontend build, and manifest config change
 
