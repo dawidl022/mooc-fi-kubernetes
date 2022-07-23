@@ -44,7 +44,3 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: DB_URL
               value: "postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable"
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: db-volume
-              subPath: postgres
