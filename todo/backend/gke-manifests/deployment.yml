@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-api
+  namespace: project
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: todo-api
+  template:
+    metadata:
+      labels:
+        app: todo-api
+    spec:
+      volumes:
+        - name: db-volume
+          persistentVolumeClaim:
+            claimName: image-claim
+      containers:
+        - name: todo-api
+          image: PROJECT/IMAGE_API
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_PASSWORD
+            - name: DB_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable"
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: db-volume
+              subPath: postgres

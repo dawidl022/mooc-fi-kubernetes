@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+  - name: PROJECT/IMAGE_API
+  - name: PROJECT/IMAGE_UI
+resources:
+  - manifests/ingress.yml
+  - backend/gke-manifests/deployment.yml
+  - backend/gke-manifests/lb-service.yml
+  - backend/gke-manifests/database.yml
+  - backend/gke-manifests/pvc.yml
+  - frontend/gke-manifests/deployment.yml
+  - frontend/gke-manifests/lb-service.yml
