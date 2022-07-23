@@ -34,7 +34,8 @@ spec:
               name: db
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
           envFrom:
             - secretRef:
                 name: database-env
@@ -45,4 +46,4 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 1Gi
+            storage: 100Mi
