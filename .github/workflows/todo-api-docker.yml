@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - todo/backend/**
-      - "!todo/backend/manifests/**"
+      - "!todo/backend/*manifests/**"
 
 jobs:
   push_todo_api_to_registry:

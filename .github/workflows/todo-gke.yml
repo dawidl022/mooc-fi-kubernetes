@@ -62,6 +62,7 @@ jobs:
         uses: imranismail/setup-kustomize@v1
 
       - name: Deploy
+        working-directory: todo
         run: |-
           kustomize edit set image PROJECT/IMAGE_API=gcr.io/$PROJECT_ID/$IMAGE_API:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
           kustomize edit set image PROJECT/IMAGE_UI=gcr.io/$PROJECT_ID/$IMAGE_UI:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
