@@ -22,3 +22,8 @@ Advantages of own DBMS images with PersistentVolumeClaims
 
 [Google Cloud SQL](https://cloud.google.com/sql)  
 [PostgreSQL in the Cloud: DBaaS vs Kubernetes - Michal Nosek | Percona Live 2022](https://www.youtube.com/watch?v=CRCkh8mbrpE)
+
+
+## Exercise 3.07
+
+For this exercise I have chosen to use Google Cloud SQL because I have have not used it before, whereas Postgres with PersistentVolumeClaims has been covered in the course. As such, I am curious to see which approach is more intuitive.
