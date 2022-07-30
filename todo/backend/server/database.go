@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/url"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -23,7 +25,7 @@ func initDB(conf *config.Conf) (*gorm.DB, error) {
 
 func connectDB(conf *config.Conf) (*gorm.DB, error) {
 	return gorm.Open(postgres.New(postgres.Config{
-		DSN: conf.DatabaseUrl,
+		DSN: url.QueryEscape(conf.DatabaseUrl),
 	}), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
