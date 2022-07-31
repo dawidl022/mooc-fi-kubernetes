@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"net/url"
 	"os"
 )
 
@@ -15,7 +17,16 @@ func GetConf() Conf {
 		port = "8080"
 	}
 	return Conf{
-		DatabaseUrl: os.Getenv("DB_URL"),
+		DatabaseUrl: getDbUrl(),
 		Port:        port,
 	}
+}
+
+func getDbUrl() string {
+	host := url.PathEscape(os.Getenv("DB_HOST"))
+	name := url.PathEscape(os.Getenv("DB_NAME"))
+	user := url.PathEscape(os.Getenv("DB_USER"))
+	pass := url.PathEscape(os.Getenv("DB_PASSWORD"))
+
+	return fmt.Sprintf("postgresql://%s:%s@$%s:5432/%s?sslmode=disable", user, pass, host, name)
 }
