@@ -21,3 +21,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: log-dotenv
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi

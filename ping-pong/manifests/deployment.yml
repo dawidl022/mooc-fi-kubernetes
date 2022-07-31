@@ -39,4 +39,8 @@ spec:
                   name: postgres-env
                   key: POSTGRES_PASSWORD
             - name: DB_URL
-              value: 'postgresql://$(DB_USER):$(DB_PASSWORD)@postgres-pong-svc:5432/$(DB_NAME)?sslmode=disable'
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@postgres-pong-svc:5432/$(DB_NAME)?sslmode=disable"
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
