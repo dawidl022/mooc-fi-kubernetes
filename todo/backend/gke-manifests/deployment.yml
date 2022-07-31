@@ -19,6 +19,8 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
+          ports:
+            - containerPort: 8080
           env:
             - name: DB_NAME
               valueFrom:
