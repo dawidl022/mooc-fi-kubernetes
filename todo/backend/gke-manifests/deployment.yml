@@ -12,6 +12,10 @@ spec:
       labels:
         app: todo-api
     spec:
+      volumes:
+        - name: db-volume
+          persistentVolumeClaim:
+            claimName: image-claim
       containers:
         - name: todo-api
           image: PROJECT/IMAGE_API
@@ -21,10 +25,6 @@ spec:
               cpu: "100m"
           ports:
             - containerPort: 8080
-          livenessProbe:
-            httpGet:
-              path: /api/todos
-              port: 8080
           env:
             - name: DB_NAME
               valueFrom:
@@ -41,11 +41,5 @@ spec:
                 secretKeyRef:
                   name: database-env
                   key: POSTGRES_PASSWORD
-            - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: database-env
-                  key: POSTGRES_HOST
-            - name: PORT
-              value: "8080"
-      serviceAccountName: ksa-cloud-sql
+            - name: DB_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable"
