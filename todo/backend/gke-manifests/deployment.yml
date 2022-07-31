@@ -21,6 +21,10 @@ spec:
               cpu: "100m"
           ports:
             - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /api/todos
+              port: 8080
           env:
             - name: DB_NAME
               valueFrom:
