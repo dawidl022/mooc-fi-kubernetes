@@ -28,5 +28,8 @@ func getDbUrl() string {
 	user := url.PathEscape(os.Getenv("DB_USER"))
 	pass := url.PathEscape(os.Getenv("DB_PASSWORD"))
 
+	fmt.Println(os.Getenv("DB_HOST"))
+	fmt.Println(host)
+
 	return fmt.Sprintf("postgresql://%s:%s@%s:5432/%s?sslmode=disable", user, pass, host, name)
 }
