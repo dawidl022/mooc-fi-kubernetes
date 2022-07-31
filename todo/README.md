@@ -27,3 +27,5 @@ Advantages of own DBMS images with PersistentVolumeClaims
 ## Exercise 3.07
 
 For this exercise I have chosen to use Google Cloud SQL because I have have not used it before, whereas Postgres with PersistentVolumeClaims has been covered in the course. As such, I am curious to see which approach is more intuitive.
+
+*Edit*: as it turned out, setting up a connection to Google Cloud SQL proved more challenging, as it requires setting up service accounts and Cloud SQL Auth proxy.
