@@ -41,5 +41,8 @@ spec:
                 secretKeyRef:
                   name: database-env
                   key: POSTGRES_PASSWORD
-            - name: DB_URL
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable"
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_HOST
