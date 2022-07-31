@@ -12,10 +12,6 @@ spec:
       labels:
         app: todo-api
     spec:
-      volumes:
-        - name: db-volume
-          persistentVolumeClaim:
-            claimName: image-claim
       containers:
         - name: todo-api
           image: PROJECT/IMAGE_API
@@ -23,8 +19,6 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
-          ports:
-            - containerPort: 8080
           env:
             - name: DB_NAME
               valueFrom:
