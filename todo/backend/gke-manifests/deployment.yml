@@ -48,4 +48,4 @@ spec:
                   key: POSTGRES_HOST
             - name: PORT
               value: "8080"
-      serviceAccountName: account
+      serviceAccountName: ksa-cloud-sql
