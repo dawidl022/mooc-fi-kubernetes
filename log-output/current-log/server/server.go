@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+const pingPongUrl = "http://ping-pong-svc/"
+
 func StartServer() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -20,7 +22,7 @@ func StartServer() {
 			http.Error(w, fmt.Sprintf("failed to read log file: %v", err), http.StatusInternalServerError)
 			return
 		}
-		resp, err := http.Get("http://ping-pong-svc/ping-count")
+		resp, err := http.Get(pingPongUrl + "ping-count")
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to get ping count: %v", err), http.StatusInternalServerError)
 			return
@@ -33,6 +35,15 @@ func StartServer() {
 		fmt.Fprintln(w, os.Getenv("MESSAGE"))
 		w.Write(current_log)
 		fmt.Fprintf(w, "Ping / Pongs: %s", ping_count)
+	})
+
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		resp, err := http.Get(pingPongUrl + "healthz")
+		if err != nil || resp.StatusCode < 200 || resp.StatusCode >= 300 {
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 	})
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))

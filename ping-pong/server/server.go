@@ -29,7 +29,7 @@ func StartServer() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// try to reconnect to db on each request if db wasn't initialised successfully before
-		db = initDBIfNull(db, conf)
+		db = initDBIfNil(db, conf)
 
 		counter := s.getRequestCount(db)
 		fmt.Fprintf(w, "pong %d", counter)
@@ -39,8 +39,17 @@ func StartServer() {
 	})
 
 	http.HandleFunc("/ping-count", func(w http.ResponseWriter, r *http.Request) {
-		db = initDBIfNull(db, conf)
+		db = initDBIfNil(db, conf)
 		fmt.Fprint(w, strconv.Itoa(s.getRequestCount(db)))
+	})
+
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		db = initDBIfNil(db, conf)
+		if db == nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 	})
 
 	log.Fatal(http.ListenAndServe(":"+conf.Port, nil))

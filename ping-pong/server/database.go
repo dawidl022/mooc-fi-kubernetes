@@ -42,7 +42,7 @@ func connectDB(conf *config.Conf) (*gorm.DB, error) {
 	})
 }
 
-func initDBIfNull(db *gorm.DB, conf config.Conf) *gorm.DB {
+func initDBIfNil(db *gorm.DB, conf config.Conf) *gorm.DB {
 	if db == nil {
 		newDb, _ := initDB(&conf)
 		return newDb
