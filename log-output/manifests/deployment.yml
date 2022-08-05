@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: log-output
-          image: dawidl022/simple-logger:sha-5de7683
+          image: dawidl022/simple-logger:sha-2a0cd06
           env:
             - name: PORT
               value: "8081"
@@ -25,3 +25,9 @@ spec:
             limits:
               cpu: 100m
               memory: 256Mi
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8081
