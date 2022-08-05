@@ -17,7 +17,7 @@ spec:
           emptyDir: {}
       containers:
         - name: todo-api
-          image: dawidl022/todo-app:sha-0a0242f
+          image: dawidl022/todo-app:sha-44e618a
           volumeMounts:
             - mountPath: /cache
               name: cache-volume
@@ -38,4 +38,20 @@ spec:
                   name: database-env
                   key: POSTGRES_PASSWORD
             - name: DB_URL
-              value: 'postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable'
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable"
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            httpGet:
+              path: healthz
+              port: 8080
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8080
