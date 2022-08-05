@@ -17,4 +17,7 @@ func routes(router *http.ServeMux, db *gorm.DB) {
 	router.HandleFunc("/kill", func(w http.ResponseWriter, r *http.Request) {
 		os.Exit(0)
 	})
+	router.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 }
