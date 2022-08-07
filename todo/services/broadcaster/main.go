@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
-	"html/template"
 	"log"
 	"net/http"
+	"text/template"
 
 	"github.com/nats-io/nats.go"
 
@@ -62,8 +62,5 @@ func broadcastMessage(url string, tmpl *template.Template, msg string) error {
 	var buf bytes.Buffer
 	tmpl.Execute(&buf, struct{ Message string }{msg})
 	_, err := http.Post(url, "application/json", &buf)
-	buf.Reset()
-	tmpl.Execute(&buf, struct{ Message string }{msg})
-	log.Println(buf.String())
 	return err
 }
