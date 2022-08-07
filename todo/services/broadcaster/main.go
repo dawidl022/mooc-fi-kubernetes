@@ -24,7 +24,7 @@ func broadcastOnMessage() {
 	tmpl := mustCreateTemplate(conf.SendMessageTemplate)
 	nc := mustInitNatsClient(conf.NatsUrl)
 
-	_, err := nc.Subscribe("todo", func(msg *nats.Msg) {
+	_, err := nc.QueueSubscribe("todo", "todo-broadcaster", func(msg *nats.Msg) {
 		err := broadcastMessage(conf.SendMessageUrl, tmpl, string(msg.Data))
 		if err != nil {
 			log.Println(err)
@@ -64,8 +64,6 @@ func broadcastMessage(url string, tmpl *template.Template, msg string) error {
 	if err != nil {
 		return err
 	}
-
-	log.Println(string(escapedMsg))
 
 	var buf bytes.Buffer
 	tmpl.Execute(&buf, struct{ Message string }{string(escapedMsg)})
