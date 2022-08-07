@@ -65,6 +65,8 @@ func broadcastMessage(url string, tmpl *template.Template, msg string) error {
 		return err
 	}
 
+	log.Println(string(escapedMsg))
+
 	var buf bytes.Buffer
 	tmpl.Execute(&buf, struct{ Message string }{string(escapedMsg)})
 	_, err = http.Post(url, "application/json", &buf)
