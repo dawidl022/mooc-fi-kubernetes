@@ -22,9 +22,8 @@ func broadcastOnMessage() {
 	conf := mustLoadConfig()
 	tmpl := mustCreateTemplate(conf.SendMessageTemplate)
 	nc := mustInitNatsClient(conf.NatsUrl)
-	defer nc.Close()
 
-	sub, err := nc.Subscribe("todo", func(msg *nats.Msg) {
+	_, err := nc.Subscribe("todo", func(msg *nats.Msg) {
 		err := broadcastMessage(conf.SendMessageUrl, tmpl, string(msg.Data))
 		if err != nil {
 			log.Println(err)
@@ -33,7 +32,6 @@ func broadcastOnMessage() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer sub.Unsubscribe()
 }
 
 func mustLoadConfig() *config.Config {
