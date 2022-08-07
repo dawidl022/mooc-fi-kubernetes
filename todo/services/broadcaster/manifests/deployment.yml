@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todo-broadcaster
-          image: dawidl022/todo-broadcaster:sha-d9fa869
+          image: PROJECT/IMAGE_BROADCASTER
           resources:
             limits:
               memory: "128Mi"

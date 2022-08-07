@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
         - name: todo-ui
-          image: dawidl022/todo-ui:sha-198638f
+          image: PROJECT/IMAGE_UI
