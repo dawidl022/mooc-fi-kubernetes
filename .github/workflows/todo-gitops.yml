@@ -3,7 +3,7 @@ name: Release todo app to GitOps
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - .github/workflows/todo-gitops.yml
       - todo/**
