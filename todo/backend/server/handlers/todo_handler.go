@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/dawidl022/mooc-fi-kubernetes/todo/models"
@@ -103,8 +104,13 @@ func (t *todoHandler) put(w http.ResponseWriter, r *http.Request) {
 func (t *todoHandler) publishTodo(todoModel models.Todo, action string) {
 	if t.nc != nil {
 		jsonMsg, err := json.Marshal(todoModel)
-		if err == nil {
-			t.nc.Publish("todo", []byte(fmt.Sprintf("A task was %s:\n%s\n", action, jsonMsg)))
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		err = t.nc.Publish("todo", []byte(fmt.Sprintf("A task was %s:\n%s\n", action, jsonMsg)))
+		if err != nil {
+			log.Println(err)
 		}
 	}
 }
