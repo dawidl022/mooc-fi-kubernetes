@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dawidl022/mooc-fi-kubernetes/todo/config"
+	"github.com/nats-io/nats.go"
 )
 
 func StartServer() {
@@ -24,8 +25,14 @@ func serve(conf config.Conf) {
 		log.Fatalf("failed to initialise database: %v", err)
 	}
 
+	nc, err := nats.Connect(conf.NatsUrl)
+	if err != nil {
+		log.Println(err)
+	}
+	defer nc.Close()
+
 	router := http.NewServeMux()
-	routes(router, db)
+	routes(router, db, nc)
 	configuredRouter := LoggingMiddleware(*log.Default())(router)
 
 	log.Fatal(http.ListenAndServe(":"+conf.Port, configuredRouter))

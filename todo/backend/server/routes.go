@@ -5,11 +5,12 @@ import (
 	"os"
 
 	"github.com/dawidl022/mooc-fi-kubernetes/todo/server/handlers"
+	"github.com/nats-io/nats.go"
 	"gorm.io/gorm"
 )
 
-func routes(router *http.ServeMux, db *gorm.DB) {
-	todoHandler := handlers.NewTodoHandler(db)
+func routes(router *http.ServeMux, db *gorm.DB, nc *nats.Conn) {
+	todoHandler := handlers.NewTodoHandler(db, nc)
 
 	router.Handle("/api/hash", handlers.NewHashHandler())
 	router.Handle("/api/daily-image", handlers.NewDailyImageHandler())
