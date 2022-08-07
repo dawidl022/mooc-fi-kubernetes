@@ -61,6 +61,9 @@ func mustInitNatsClient(url string) *nats.Conn {
 func broadcastMessage(url string, tmpl *template.Template, msg string) error {
 	var buf bytes.Buffer
 	tmpl.Execute(&buf, struct{ Message string }{msg})
-	_, err := http.Post(url, "text/plain", &buf)
+	_, err := http.Post(url, "application/json", &buf)
+	buf.Reset()
+	tmpl.Execute(&buf, struct{ Message string }{msg})
+	log.Println(buf.String())
 	return err
 }
