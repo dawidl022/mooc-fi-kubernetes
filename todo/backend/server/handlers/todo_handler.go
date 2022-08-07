@@ -103,7 +103,7 @@ func (t *todoHandler) put(w http.ResponseWriter, r *http.Request) {
 
 func (t *todoHandler) publishTodo(todoModel models.Todo, action string) {
 	if t.nc != nil {
-		jsonMsg, err := json.Marshal(todoModel)
+		jsonMsg, err := json.MarshalIndent(todoModel, "", "  ")
 		if err != nil {
 			log.Println(err)
 			return
