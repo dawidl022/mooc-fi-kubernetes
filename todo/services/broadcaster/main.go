@@ -12,16 +12,28 @@ import (
 )
 
 func main() {
+	done := make(chan struct{})
+	go broadcastOnMessage()
+
+	<-done
+}
+
+func broadcastOnMessage() {
 	conf := mustLoadConfig()
 	tmpl := mustCreateTemplate(conf.SendMessageTemplate)
 	nc := mustInitNatsClient(conf.NatsUrl)
+	defer nc.Close()
 
-	nc.Subscribe("todo", func(msg *nats.Msg) {
+	sub, err := nc.Subscribe("todo", func(msg *nats.Msg) {
 		err := broadcastMessage(conf.SendMessageUrl, tmpl, string(msg.Data))
 		if err != nil {
 			log.Println(err)
 		}
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sub.Unsubscribe()
 }
 
 func mustLoadConfig() *config.Config {
