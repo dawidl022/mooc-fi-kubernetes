@@ -31,21 +31,21 @@ jobs:
         with:
           context: todo/backend
           push: true
-          tags: $(IMAGE_API):${{ github.sha }}
+          tags: dawidl022/todo-api:${{ github.sha }}
 
       - name: Build and Push frontend
         uses: docker/build-push-action@v2
         with:
           context: todo/frontend
           push: true
-          tags: $(IMAGE_UI):${{ github.sha }}
+          tags: dawidl022/todo-ui:${{ github.sha }}
 
       - name: Build and push broadcaster
         uses: docker/build-push-action@v2
         with:
           context: todo/services/broadcaster
           push: true
-          tags: $(IMAGE_BROADCASTER):${{ github.sha }}
+          tags: dawidl022/todo-broadcaster:${{ github.sha }}
 
   deploy:
     name: Deploy
