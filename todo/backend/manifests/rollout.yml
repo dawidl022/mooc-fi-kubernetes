@@ -25,7 +25,7 @@ spec:
           emptyDir: {}
       containers:
         - name: todo-api
-          image: dawidl022/todo-app:sha-44e618a
+          image: dawidl022/todo-app:sha-7993a20
           volumeMounts:
             - mountPath: /cache
               name: cache-volume
@@ -47,6 +47,8 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: DB_URL
               value: "postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable"
+            - name: NATS_URL
+              value: nats://my-nats:4222
           resources:
             limits:
               cpu: 500m
