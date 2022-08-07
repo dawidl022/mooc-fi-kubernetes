@@ -1,0 +1,17 @@
+name: Push todo broadcaster image to DockerHub
+
+on:
+  push:
+    paths:
+      - todo/services/broadcaster/**
+      - "!todo/services/broadcaster/*manifests/**"
+
+jobs:
+  push_todo_api_to_registry:
+    uses: ./.github/workflows/docker.yml
+    with:
+      dockerfile_path: todo/services/broadcaster
+      image_name: dawidl022/todo-broadcaster
+    secrets:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
