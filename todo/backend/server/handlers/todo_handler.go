@@ -108,13 +108,8 @@ func (t *todoHandler) publishTodo(todoModel models.Todo, action string) {
 			log.Println(err)
 			return
 		}
-		jsonMsgStr, err := json.Marshal(string(jsonMsg))
-		if err != nil {
-			log.Println(err)
-			return
-		}
 
-		err = t.nc.Publish("todo", []byte(fmt.Sprintf("A task was %s:\n%s\n", action, jsonMsgStr)))
+		err = t.nc.Publish("todo", []byte((fmt.Sprintf("A task was %s:\n%s\n", action, jsonMsg))))
 		if err != nil {
 			log.Println(err)
 		}

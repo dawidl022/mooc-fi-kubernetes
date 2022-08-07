@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 	"text/template"
@@ -59,8 +60,13 @@ func mustInitNatsClient(url string) *nats.Conn {
 }
 
 func broadcastMessage(url string, tmpl *template.Template, msg string) error {
+	escapedMsg, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+
 	var buf bytes.Buffer
-	tmpl.Execute(&buf, struct{ Message string }{msg})
-	_, err := http.Post(url, "application/json", &buf)
+	tmpl.Execute(&buf, struct{ Message string }{string(escapedMsg)})
+	_, err = http.Post(url, "application/json", &buf)
 	return err
 }
