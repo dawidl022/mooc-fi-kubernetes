@@ -8,6 +8,6 @@ spec:
   selector:
     app: todo-ui
   ports:
-    - port: 3000
+    - port: 80
       targetPort: 80
       protocol: TCP

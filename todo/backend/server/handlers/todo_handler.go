@@ -24,41 +24,71 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		var todos []*models.Todo
-		err := t.db.Find(&todos).Error
-		if err != nil {
-			http.Error(w, "failed to fetch todos", http.StatusInternalServerError)
-			return
-		}
-
-		todosJson, err := json.Marshal(todos)
-		if err != nil {
-			http.Error(w, "failed to marshal todos", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Add("Content-Type", "application/json")
-		w.Write(todosJson)
+		t.get(w)
 	case http.MethodPost:
-		todo, err := io.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "Failed to get todo from request", http.StatusInternalServerError)
-			return
-		}
-		if len(todo) > 140 {
-			http.Error(w, "Todo cannot be longer than 140 characters", http.StatusBadRequest)
-			return
-		}
-		todoModel := models.Todo{Content: string(todo)}
-		err = t.db.Create(&todoModel).Error
-		if err != nil {
-			http.Error(w, "Failed to save todo", http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(http.StatusCreated)
+		t.post(w, r)
+	case http.MethodPut:
+		t.put(w, r)
 	default:
 		http.Error(w, "", http.StatusMethodNotAllowed)
 	}
+}
+
+func (t *todoHandler) get(w http.ResponseWriter) {
+	var todos []*models.Todo
+	err := t.db.Find(&todos).Error
+	if err != nil {
+		http.Error(w, "failed to fetch todos", http.StatusInternalServerError)
+		return
+	}
+
+	todosJson, err := json.Marshal(todos)
+	if err != nil {
+		http.Error(w, "failed to marshal todos", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Add("Content-Type", "application/json")
+	w.Write(todosJson)
+}
+
+func (t *todoHandler) post(w http.ResponseWriter, r *http.Request) {
+	todo, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to get todo from request", http.StatusInternalServerError)
+		return
+	}
+	if len(todo) > 140 {
+		http.Error(w, "Todo cannot be longer than 140 characters", http.StatusBadRequest)
+		return
+	}
+	todoModel := models.Todo{Content: string(todo)}
+	err = t.db.Create(&todoModel).Error
+	if err != nil {
+		http.Error(w, "Failed to save todo", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (t *todoHandler) put(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to get todo from request", http.StatusInternalServerError)
+		return
+	}
+
+	var todo models.Todo
+	err = json.Unmarshal(body, &todo)
+	if err != nil {
+		http.Error(w, "Failed to parse todo", http.StatusBadRequest)
+		return
+	}
+	if err := t.db.Save(&todo).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func AddWikiPage(db *gorm.DB) func(w http.ResponseWriter, r *http.Request) {

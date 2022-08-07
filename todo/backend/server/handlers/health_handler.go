@@ -15,5 +15,4 @@ func PingDB(db *gorm.DB) func(http.ResponseWriter, *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}
 	}
-
 }
