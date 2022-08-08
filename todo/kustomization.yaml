@@ -2,20 +2,22 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: project
 images:
-- name: PROJECT/IMAGE_API
-  newName: dawidl022/todo-api
-  newTag: 2fe85e3c0f21236c7f5dfb6374d6202802c80fea
-- name: PROJECT/IMAGE_BROADCASTER
-  newName: dawidl022/todo-broadcaster
-  newTag: 2fe85e3c0f21236c7f5dfb6374d6202802c80fea
-- name: PROJECT/IMAGE_UI
-  newName: dawidl022/todo-ui
-  newTag: 2fe85e3c0f21236c7f5dfb6374d6202802c80fea
+  - name: PROJECT/IMAGE_API
+    newName: dawidl022/todo-api
+    newTag: 2fe85e3c0f21236c7f5dfb6374d6202802c80fea
+  - name: PROJECT/IMAGE_BROADCASTER
+    newName: dawidl022/todo-broadcaster
+    newTag: 2fe85e3c0f21236c7f5dfb6374d6202802c80fea
+  - name: PROJECT/IMAGE_UI
+    newName: dawidl022/todo-ui
+    newTag: 2fe85e3c0f21236c7f5dfb6374d6202802c80fea
 resources:
-- manifests/ingress.yml
-- backend/manifests/db/database.yml
-- backend/manifests/deployment.yml
-- backend/manifests/service.yml
-- services/broadcaster/manifests/deployment.yml
-- frontend/manifests/deployment.yml
-- frontend/manifests/service.yml
+  - manifests/ingress.yml
+  - backend/manifests/db/database.yml
+  - backend/manifests/deployment.yml
+  - backend/manifests/service.yml
+  - backend/manifests/secrets/secrets.enc.yml
+  - services/broadcaster/manifests/deployment.yml
+  - services/broadcaster/manifests/secrets.enc.yml
+  - frontend/manifests/deployment.yml
+  - frontend/manifests/service.yml
