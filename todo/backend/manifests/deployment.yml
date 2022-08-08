@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-api
+  namespace: project
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-api
+  template:
+    metadata:
+      labels:
+        app: todo-api
+    spec:
+      volumes:
+        - name: cache-volume
+          emptyDir: {}
+      containers:
+        - name: todo-api
+          image: PROJECT/IMAGE_API
+          volumeMounts:
+            - mountPath: /cache
+              name: cache-volume
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-env
+                  key: POSTGRES_PASSWORD
+            - name: DB_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@database-svc:5432/$(DB_NAME)?sslmode=disable"
+            - name: NATS_URL
+              value: nats://my-nats:4222
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            httpGet:
+              path: healthz
+              port: 8080
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 8080
