@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Website }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Website }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Website }}
+    spec:
+      containers:
+        - name: {{ .Website }}
+          image: nginx:1.23.1-alpine
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          ports:
+            - containerPort: 80
+          command:
+            - bin/sh
+          args:
+            - -c
+            - |-
+              echo $'{{ .Body }}' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Website }}-service
+spec:
+  selector:
+    app: {{ .Website }}
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Website }}-ingress
+  labels:
+    name: {{ .Website }}-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: {{ .Website }}-service
+                port:
+                  number: 80

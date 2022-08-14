@@ -69,7 +69,7 @@ func (g *getterHttpStatusStub) get(url string) (*http.Response, error) {
 	return &http.Response{StatusCode: g.status}, nil
 }
 
-func TestScraper_ReturnsBody_WhenHttpOK(t *testing.T) {
+func TestScrape_ReturnsBody_WhenHttpOK(t *testing.T) {
 	messages := []string{"Hello, world!", "I need scissors! 61!"}
 	for _, message := range messages {
 		getter := &getterStub{status: http.StatusOK, body: []byte(message)}
