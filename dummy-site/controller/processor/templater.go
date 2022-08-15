@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"bytes"
 	_ "embed"
 	"io"
 	"regexp"
@@ -50,4 +51,31 @@ func (m *manifestApplier) GenerateManifests(w io.Writer, website string, body st
 	body = strings.ReplaceAll(body, "\n", `\n`)
 	params := manifestParams{Website: website, Body: body}
 	m.templateApplier.Write(w, params)
+}
+
+// TODO CODE BELOW THIS LINE SHOULD BE REFACTORED
+// ----------------------------------------------
+
+//go:embed templates/deployment.yml.tmpl
+var deploymentTemplate string
+
+//go:embed templates/service.yml.tmpl
+var serviceTemplate string
+
+//go:embed templates/ingress.yml.tmpl
+var ingressTemplate string
+
+func ApplyTest() {
+	Apply(ManifestReaders{
+		deploymentReader: generateManifest(deploymentTemplate),
+		serviceReader:    generateManifest(serviceTemplate),
+		ingressReader:    generateManifest(ingressTemplate),
+	})
+}
+
+func generateManifest(template string) *bytes.Buffer {
+	m := manifestApplier{templateApplier: templateApplier{template: template}}
+	buf := new(bytes.Buffer)
+	m.GenerateManifests(buf, "test-com2", "Hello world! LOOOK")
+	return buf
 }

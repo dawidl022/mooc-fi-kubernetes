@@ -11,9 +11,10 @@ spec:
       labels:
         app: dummy-site-controller
     spec:
+      serviceAccountName: dummy-site-controller
       containers:
         - name: dummy-site-controller
-          image: dummy-site-controller
+          image: mycluster-registry:63588/dummy-site-controller # dev only setting
           imagePullPolicy: Always # dev only setting
           resources:
             limits:
