@@ -20,6 +20,8 @@ func TestUrlToWebsite_ReplacesDotsInDomainWithDashes(t *testing.T) {
 	assertUrlToWebsite(t, inputs, expected)
 }
 
+// TODO consider keeping path, replacing '/' with '-'
+// and removing special chars and query parameters
 func TestUrlToWebsite_StripsPath(t *testing.T) {
 	inputs := []string{"example/hello", "website/some/path/to/article.html"}
 	expected := []string{"example", "website"}

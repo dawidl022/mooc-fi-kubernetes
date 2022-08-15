@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dummy-site-controller
+spec:
+  selector:
+    matchLabels:
+      app: dummy-site-controller
+  template:
+    metadata:
+      labels:
+        app: dummy-site-controller
+    spec:
+      containers:
+        - name: dummy-site-controller
+          image: dummy-site-controller
+          imagePullPolicy: Always # dev only setting
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
