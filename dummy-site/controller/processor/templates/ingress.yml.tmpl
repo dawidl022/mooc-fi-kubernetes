@@ -9,7 +9,7 @@ spec:
     - http:
         paths:
           - pathType: Prefix
-            path: /
+            path: /{{ .Website }}
             backend:
               service:
                 name: {{ .Website }}-service

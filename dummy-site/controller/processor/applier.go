@@ -1,7 +1,9 @@
 package processor
 
 import (
+	"bytes"
 	"context"
+	_ "embed"
 	"fmt"
 	"io"
 	"time"
@@ -26,7 +28,11 @@ type manifests struct {
 	deployment *appsv1.Deployment
 	service    *v1.Service
 	ingress    *networkingv1.Ingress
+	configMap  *v1.ConfigMap
 }
+
+//go:embed manifests/configmap.yml
+var nginxConfigMap []byte
 
 func readManifests(m ManifestReaders) (*manifests, error) {
 	deployment := appsv1.Deployment{}
@@ -47,10 +53,17 @@ func readManifests(m ManifestReaders) (*manifests, error) {
 		return nil, err
 	}
 
+	configMap := v1.ConfigMap{}
+	err = yaml.NewYAMLOrJSONDecoder(bytes.NewBuffer(nginxConfigMap), 1).Decode(&configMap)
+	if err != nil {
+		return nil, err
+	}
+
 	return &manifests{
 		deployment: &deployment,
 		service:    &service,
 		ingress:    &ingress,
+		configMap:  &configMap,
 	}, nil
 }
 
@@ -74,7 +87,22 @@ func Apply(mr ManifestReaders) {
 	for {
 		// TODO create dummy-sites namespace if not exists and use it
 		namespace := "default"
-		_, err := clientset.AppsV1().Deployments(namespace).Get(context.TODO(), m.deployment.Name, metav1.GetOptions{})
+		_, err := clientset.CoreV1().ConfigMaps(namespace).Get(context.TODO(), m.configMap.Name, metav1.GetOptions{})
+		if errors.IsNotFound(err) {
+			_, err := clientset.CoreV1().ConfigMaps(namespace).Create(context.TODO(), m.configMap, metav1.CreateOptions{})
+			if err != nil {
+				panic(err.Error())
+			}
+			fmt.Printf("ConfigMap %s created!\n", m.configMap.Name)
+		} else {
+			_, err := clientset.CoreV1().ConfigMaps(namespace).Update(context.TODO(), m.configMap, metav1.UpdateOptions{})
+			if err != nil {
+				panic(err.Error())
+			}
+			fmt.Printf("ConfigMap %s updates!\n", m.configMap.Name)
+		}
+
+		_, err = clientset.AppsV1().Deployments(namespace).Get(context.TODO(), m.deployment.Name, metav1.GetOptions{})
 		if errors.IsNotFound(err) {
 			_, err := clientset.AppsV1().Deployments(namespace).Create(context.TODO(), m.deployment, metav1.CreateOptions{})
 			if err != nil {

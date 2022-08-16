@@ -4,7 +4,7 @@ metadata:
   name: dummy-site-controller
 rules:
   - apiGroups: [""]
-    resources: ["services"]
+    resources: ["services", "configmaps"]
     verbs: ["get", "create", "update"]
   - apiGroups: ["apps"]
     resources: ["deployments"]

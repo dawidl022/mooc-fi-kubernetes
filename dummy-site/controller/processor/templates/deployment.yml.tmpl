@@ -26,3 +26,13 @@ spec:
             - -c
             - |-
               echo $'{{ .Body }}' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: nginx-conf
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+            items:
+              - key: nginx-conf
+                path: default.conf
