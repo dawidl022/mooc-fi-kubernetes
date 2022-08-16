@@ -18,11 +18,11 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type kubernetesApplier struct {
+type KubernetesApplier struct {
 	clientset *kubernetes.Clientset
 }
 
-func NewApplier() (*kubernetesApplier, error) {
+func NewApplier() (*KubernetesApplier, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
@@ -31,16 +31,17 @@ func NewApplier() (*kubernetesApplier, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &kubernetesApplier{clientset: clientset}, nil
+	return &KubernetesApplier{clientset: clientset}, nil
 }
 
-type status string
+type Status string
 
 const (
-	StatusWorking status = "WORKING"
-	StatusDone    status = "DONE"
-	StatusError   status = "ERROR"
-	namespace            = "default"
+	StatusInitialising Status = "INITIALISING"
+	StatusWorking      Status = "WORKING"
+	StatusDone         Status = "DONE"
+	StatusError        Status = "ERROR"
+	namespace                 = "default"
 )
 
 type applier interface {
@@ -49,7 +50,7 @@ type applier interface {
 	sleepDuration() time.Duration
 }
 
-func (a *kubernetesApplier) ApplyDummySite(website string, url string, term chan bool, status chan status) error {
+func (a *KubernetesApplier) ApplyDummySite(website string, url string, term chan bool, status chan Status) error {
 	body, err := NewScraper().Scrape(url)
 	if err != nil {
 		return err
@@ -66,9 +67,9 @@ func (a *kubernetesApplier) ApplyDummySite(website string, url string, term chan
 	return applyUntilDestroyed(a, m, term, status)
 }
 
-const sleepDuration = 10 * time.Second
+const SleepDuration = 10 * time.Second
 
-func applyUntilDestroyed(a applier, m *manifests, term chan bool, status chan status) error {
+func applyUntilDestroyed(a applier, m *manifests, term chan bool, status chan Status) error {
 	defer close(status)
 
 	terminating := false
@@ -117,7 +118,7 @@ type manifests struct {
 //go:embed manifests/configmap.yml
 var nginxConfigMap []byte
 
-func (a *kubernetesApplier) readManifests(m *ManifestReaders) (*manifests, error) {
+func (a *KubernetesApplier) readManifests(m *ManifestReaders) (*manifests, error) {
 	deployment := appsv1.Deployment{}
 	err := yaml.NewYAMLOrJSONDecoder(m.deploymentReader, 1).Decode(&deployment)
 	if err != nil {
@@ -150,7 +151,7 @@ func (a *kubernetesApplier) readManifests(m *ManifestReaders) (*manifests, error
 	}, nil
 }
 
-func (a *kubernetesApplier) apply(m *manifests) error {
+func (a *KubernetesApplier) apply(m *manifests) error {
 	// TODO create dummy-sites namespace if not exists and use it
 	_, err := a.clientset.CoreV1().ConfigMaps(namespace).Get(context.TODO(), m.configMap.Name, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
@@ -164,7 +165,7 @@ func (a *kubernetesApplier) apply(m *manifests) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("ConfigMap %s updates!\n", m.configMap.Name)
+		fmt.Printf("ConfigMap %s updated!\n", m.configMap.Name)
 	}
 
 	_, err = a.clientset.AppsV1().Deployments(namespace).Get(context.TODO(), m.deployment.Name, metav1.GetOptions{})
@@ -214,8 +215,7 @@ func (a *kubernetesApplier) apply(m *manifests) error {
 	return nil
 }
 
-// TODO test manually by calling directly
-func (a *kubernetesApplier) cleanupResources(m *manifests) error {
+func (a *KubernetesApplier) cleanupResources(m *manifests) error {
 	_, err := a.clientset.AppsV1().Deployments(namespace).Get(context.TODO(), m.deployment.Name, metav1.GetOptions{})
 	if err == nil {
 		err := a.clientset.AppsV1().Deployments(namespace).Delete(context.TODO(), m.deployment.Name, metav1.DeleteOptions{})
@@ -233,6 +233,7 @@ func (a *kubernetesApplier) cleanupResources(m *manifests) error {
 		if err != nil {
 			return err
 		}
+		fmt.Printf("Service %s deleted!\n", m.deployment.Name)
 	} else if !errors.IsNotFound(err) {
 		return err
 	}
@@ -243,6 +244,7 @@ func (a *kubernetesApplier) cleanupResources(m *manifests) error {
 		if err != nil {
 			return err
 		}
+		fmt.Printf("Ingress %s deleted!\n", m.deployment.Name)
 	} else if !errors.IsNotFound(err) {
 		return err
 	}
@@ -250,6 +252,6 @@ func (a *kubernetesApplier) cleanupResources(m *manifests) error {
 	return nil
 }
 
-func (a *kubernetesApplier) sleepDuration() time.Duration {
-	return sleepDuration
+func (a *KubernetesApplier) sleepDuration() time.Duration {
+	return SleepDuration
 }

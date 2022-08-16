@@ -18,6 +18,7 @@ spec:
           type: object
           properties:
             spec:
+              type: object
               properties:
                 website_url:
                   type: string

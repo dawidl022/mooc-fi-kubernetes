@@ -42,7 +42,7 @@ func (a *applierSpy) cleanupResources(*manifests) error {
 func TestApplyUntilDestroyed_RunsUtilTerminated(t *testing.T) {
 	a := applierSpy{}
 	term := make(chan bool)
-	status := make(chan status, 4)
+	status := make(chan Status, 4)
 	go applyUntilDestroyed(&a, &manifests{}, term, status)
 
 	time.Sleep(3*a.sleepDuration() - time.Millisecond)
@@ -56,13 +56,13 @@ func TestApplyUntilDestroyed_RunsUtilTerminated(t *testing.T) {
 func TestApplyUntilDestroyed_ReportsStatus(t *testing.T) {
 	a := applierStub{}
 	term := make(chan bool)
-	statusChan := make(chan status, 4)
+	statusChan := make(chan Status, 4)
 	go applyUntilDestroyed(&a, &manifests{}, term, statusChan)
 
 	time.Sleep(3*a.sleepDuration() - time.Millisecond)
 	term <- true
 
-	assertStatus(t, []status{
+	assertStatus(t, []Status{
 		StatusWorking, StatusWorking, StatusWorking, StatusDone,
 	}, statusChan)
 }
@@ -84,13 +84,13 @@ func (a *applierErroringStub) apply(*manifests) error {
 func TestApplyUntilDestroyed_ReportsErrors(t *testing.T) {
 	a := applierErroringStub{}
 	term := make(chan bool)
-	statusChan := make(chan status, 5)
+	statusChan := make(chan Status, 5)
 	go applyUntilDestroyed(&a, &manifests{}, term, statusChan)
 
 	time.Sleep(4*a.sleepDuration() - time.Millisecond)
 	term <- true
 
-	assertStatus(t, []status{
+	assertStatus(t, []Status{
 		StatusWorking, StatusError, StatusWorking, StatusError, StatusDone,
 	}, statusChan)
 }
@@ -112,19 +112,19 @@ func (a *applierErrorTermStub) cleanupResources(*manifests) error {
 func TestApplyUntilDestroyed_RetriesTermination(t *testing.T) {
 	a := applierErrorTermStub{}
 	term := make(chan bool)
-	statusChan := make(chan status, 5)
+	statusChan := make(chan Status, 5)
 	go applyUntilDestroyed(&a, &manifests{}, term, statusChan)
 
 	time.Sleep(2*a.sleepDuration() - time.Millisecond)
 	term <- true
 
-	assertStatus(t, []status{
+	assertStatus(t, []Status{
 		StatusWorking, StatusWorking, StatusError, StatusError, StatusError, StatusDone,
 	}, statusChan)
 }
 
-func assertStatus(t *testing.T, expected []status, statusChan chan status) {
-	var read []status
+func assertStatus(t *testing.T, expected []Status, statusChan chan Status) {
+	var read []Status
 	for {
 		status, ok := <-statusChan
 		if ok {
