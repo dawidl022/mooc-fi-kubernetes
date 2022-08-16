@@ -18,11 +18,11 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type applier struct {
+type kubernetesApplier struct {
 	clientset *kubernetes.Clientset
 }
 
-func NewApplier() (*applier, error) {
+func NewApplier() (*kubernetesApplier, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
@@ -31,10 +31,25 @@ func NewApplier() (*applier, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &applier{clientset: clientset}, nil
+	return &kubernetesApplier{clientset: clientset}, nil
 }
 
-func (a *applier) ApplyUntilDestroyed(website string, url string) error {
+type status string
+
+const (
+	StatusWorking status = "WORKING"
+	StatusDone    status = "DONE"
+	StatusError   status = "ERROR"
+	namespace            = "default"
+)
+
+type applier interface {
+	apply(*manifests) error
+	cleanupResources(*manifests) error
+	sleepDuration() time.Duration
+}
+
+func (a *kubernetesApplier) ApplyDummySite(website string, url string, term chan bool, status chan status) error {
 	body, err := NewScraper().Scrape(url)
 	if err != nil {
 		return err
@@ -48,9 +63,41 @@ func (a *applier) ApplyUntilDestroyed(website string, url string) error {
 		return err
 	}
 
+	return applyUntilDestroyed(a, m, term, status)
+}
+
+const sleepDuration = 10 * time.Second
+
+func applyUntilDestroyed(a applier, m *manifests, term chan bool, status chan status) error {
+	defer close(status)
+
+	terminating := false
 	for {
-		a.apply(m)
-		time.Sleep(10 * time.Second)
+		select {
+		case <-term:
+			terminating = true
+		default:
+		}
+
+		var err error
+
+		if terminating {
+			err = a.cleanupResources(m)
+			if err == nil {
+				status <- StatusDone
+				return nil
+			}
+		} else {
+			err = a.apply(m)
+		}
+
+		if err != nil {
+			status <- StatusError
+		} else {
+			status <- StatusWorking
+		}
+
+		time.Sleep(a.sleepDuration())
 	}
 }
 
@@ -70,7 +117,7 @@ type manifests struct {
 //go:embed manifests/configmap.yml
 var nginxConfigMap []byte
 
-func (a *applier) readManifests(m *ManifestReaders) (*manifests, error) {
+func (a *kubernetesApplier) readManifests(m *ManifestReaders) (*manifests, error) {
 	deployment := appsv1.Deployment{}
 	err := yaml.NewYAMLOrJSONDecoder(m.deploymentReader, 1).Decode(&deployment)
 	if err != nil {
@@ -103,9 +150,8 @@ func (a *applier) readManifests(m *ManifestReaders) (*manifests, error) {
 	}, nil
 }
 
-func (a *applier) apply(m *manifests) error {
+func (a *kubernetesApplier) apply(m *manifests) error {
 	// TODO create dummy-sites namespace if not exists and use it
-	namespace := "default"
 	_, err := a.clientset.CoreV1().ConfigMaps(namespace).Get(context.TODO(), m.configMap.Name, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
 		_, err := a.clientset.CoreV1().ConfigMaps(namespace).Create(context.TODO(), m.configMap, metav1.CreateOptions{})
@@ -166,4 +212,44 @@ func (a *applier) apply(m *manifests) error {
 		fmt.Printf("Ingress %s updated!\n", m.service.Name)
 	}
 	return nil
+}
+
+// TODO test manually by calling directly
+func (a *kubernetesApplier) cleanupResources(m *manifests) error {
+	_, err := a.clientset.AppsV1().Deployments(namespace).Get(context.TODO(), m.deployment.Name, metav1.GetOptions{})
+	if err == nil {
+		err := a.clientset.AppsV1().Deployments(namespace).Delete(context.TODO(), m.deployment.Name, metav1.DeleteOptions{})
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Deployment %s deleted!\n", m.deployment.Name)
+	} else if !errors.IsNotFound(err) {
+		return err
+	}
+
+	_, err = a.clientset.CoreV1().Services(namespace).Get(context.TODO(), m.service.Name, metav1.GetOptions{})
+	if err == nil {
+		err := a.clientset.CoreV1().Services(namespace).Delete(context.TODO(), m.service.Name, metav1.DeleteOptions{})
+		if err != nil {
+			return err
+		}
+	} else if !errors.IsNotFound(err) {
+		return err
+	}
+
+	_, err = a.clientset.NetworkingV1().Ingresses(namespace).Get(context.TODO(), m.ingress.Name, metav1.GetOptions{})
+	if err == nil {
+		err := a.clientset.NetworkingV1().Ingresses(namespace).Delete(context.TODO(), m.ingress.Name, metav1.DeleteOptions{})
+		if err != nil {
+			return err
+		}
+	} else if !errors.IsNotFound(err) {
+		return err
+	}
+
+	return nil
+}
+
+func (a *kubernetesApplier) sleepDuration() time.Duration {
+	return sleepDuration
 }
