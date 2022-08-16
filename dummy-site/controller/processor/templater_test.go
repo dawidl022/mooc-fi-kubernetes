@@ -39,7 +39,7 @@ func TestUrlToWebsite_ReturnValidK8sIdentifier(t *testing.T) {
 
 func assertUrlToWebsite(t *testing.T, inputs []string, expected []string) {
 	for i, input := range inputs {
-		assert.Equal(t, expected[i], urlToWebsite(input))
+		assert.Equal(t, expected[i], UrlToWebsite(input))
 	}
 }
 
@@ -81,6 +81,13 @@ func TestGenerateManifests_EscapesQuotesAndNewlines(t *testing.T) {
 	message := "Hello, world!\nThis is a cool test 'n' all."
 	buf := new(bytes.Buffer)
 
-	applier.GenerateManifests(buf, "website", message)
+	applier.writeManifest(buf, "website", message)
 	assert.Equal(t, expectedManifest, buf.String())
+}
+
+//go:embed templates/manifest.yml.tmpl
+var manifestTemplate string
+
+func newManifestApplier() manifestApplier {
+	return manifestApplier{templateApplier: templateApplier{template: manifestTemplate}}
 }

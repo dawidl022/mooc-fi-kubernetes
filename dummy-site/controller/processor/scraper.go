@@ -10,8 +10,8 @@ type scraper struct {
 	get func(url string) (resp *http.Response, err error)
 }
 
-func NewScraper() scraper {
-	return scraper{get: http.Get}
+func NewScraper() *scraper {
+	return &scraper{get: http.Get}
 }
 
 func (s *scraper) Scrape(url string) ([]byte, error) {
