@@ -10,28 +10,30 @@ spec:
       app: todo-broadcaster
   template:
     metadata:
+      annotations:
+        linkerd.io/inject: enabled
       labels:
         app: todo-broadcaster
     spec:
       containers:
-        - name: todo-broadcaster
-          image: PROJECT/IMAGE_BROADCASTER
-          resources:
-            limits:
-              memory: "128Mi"
-              cpu: "100m"
-          env:
+        - env:
             - name: SEND_MESSAGE_URL
               valueFrom:
                 secretKeyRef:
-                  name: broadcaster-secrets
                   key: SEND_MESSAGE_URL
+                  name: broadcaster-secrets
             - name: CHAT_ID
               valueFrom:
                 secretKeyRef:
-                  name: broadcaster-secrets
                   key: CHAT_ID
+                  name: broadcaster-secrets
             - name: SEND_MESSAGE_TEMPLATE
               value: '{"chat_id": $(CHAT_ID), "text": {{ .Message }}}'
             - name: NATS_URL
               value: nats://my-nats:4222
+          image: PROJECT/IMAGE_BROADCASTER
+          name: todo-broadcaster
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi

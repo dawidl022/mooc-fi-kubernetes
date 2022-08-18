@@ -9,9 +9,11 @@ spec:
       app: todo-ui
   template:
     metadata:
+      annotations:
+        linkerd.io/inject: enabled
       labels:
         app: todo-ui
     spec:
       containers:
-        - name: todo-ui
-          image: PROJECT/IMAGE_UI
+        - image: PROJECT/IMAGE_UI
+          name: todo-ui
