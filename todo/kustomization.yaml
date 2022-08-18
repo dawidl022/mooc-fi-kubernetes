@@ -4,13 +4,13 @@ namespace: project
 images:
 - name: PROJECT/IMAGE_API
   newName: dawidl022/todo-api
-  newTag: 575f4a76ec600a3370dc21b4b1a89478973df309
+  newTag: 3e057c25ef5cba0a9053cbe204c2e2b7e083b1f7
 - name: PROJECT/IMAGE_BROADCASTER
   newName: dawidl022/todo-broadcaster
-  newTag: 575f4a76ec600a3370dc21b4b1a89478973df309
+  newTag: 3e057c25ef5cba0a9053cbe204c2e2b7e083b1f7
 - name: PROJECT/IMAGE_UI
   newName: dawidl022/todo-ui
-  newTag: 575f4a76ec600a3370dc21b4b1a89478973df309
+  newTag: 3e057c25ef5cba0a9053cbe204c2e2b7e083b1f7
 resources:
 - manifests/ingress.yml
 - backend/manifests/db/database.yml
