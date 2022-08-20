@@ -4,7 +4,7 @@ My solutions to the [DevOpsWithKubernetes](https://devopswithkubernetes.com/) co
 
 ## Main Projects
 
-### [DummySite CustomResourceDefinition & controller](dummy-site/README.md)
+### [DummySite CustomResourceDefinition & controller](dummy-site)
 
 Custom Kubernetes resource allowing to download an arbitrary webpage and host in on the Kubernetes cluster by specifying a simple declarative DummySite resource in yaml.
 
