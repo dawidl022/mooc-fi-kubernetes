@@ -1,0 +1,30 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: serverless-pong
+  namespace: exercises
+spec:
+  template:
+    metadata:
+      name: serverless-pong-v1
+    spec:
+      containers:
+        - image: dawidl022/ping-pong:sha-2a0cd06
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-env
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-env
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-env
+                  key: POSTGRES_PASSWORD
+            - name: DB_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@postgres-pong-svc:5432/$(DB_NAME)?sslmode=disable"
